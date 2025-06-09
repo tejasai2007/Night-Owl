@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Owl Canteen - University Night Delivery</title>
+    <style>
+        :root {
+            --dark-bg: #0a0a1a;
+            --darker-bg: #050510;
+            --accent: #6a5acd;
+            --accent-light: #9370db;
+            --text: #f0f0ff;
+            --text-dim: #b0b0c0;
+            --success: #50c878;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        header {
+            background-color: var(--darker-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-light);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .time-indicator {
+            background-color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-indicator::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .restaurant-tabs {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+            scrollbar-width: none;
+        }
+
+        .restaurant-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            background-color: var(--darker-bg);
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .tab.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent-light);
+        }
+
+        .menu-category {
+            margin-bottom: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+            color: var(--accent-light);
+        }
+
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .menu-item {
+            background-color: var(--darker-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 1px solid #222235;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .item-details {
+            padding: 1rem;
+        }
+
+        .item-name {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+            color: var(--accent-light);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .item-restaurant {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 0.5rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            background-color: var(--accent-light);
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background-color: var(--darker-bg);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #222235;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #222235;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+        }
+
+        .cart-item-restaurant {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .cart-item-price {
+            color: var(--accent-light);
+            font-weight: bold;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            background-color: var(--dark-bg);
+            border: none;
+            color: var(--text);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .remove-item {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .cart-total {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--accent);
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background-color: var(--accent-light);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        @media (max-width: 768px) {
+            .menu-items {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+
+            .cart-sidebar {
+                width: 90%;
+                right: -90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .menu-items {
+                grid-template-columns: 1fr;
+            }
+
+            .tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Night<span>Owl</span></div>
+        <div class="time-indicator">OPEN NOW (8PM - 4AM)</div>
+        <div class="cart-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span class="cart-count">0</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="restaurant-tabs">
+            <div class="tab active" data-category="all">All Items</div>
+            <div class="tab" data-category="momos">Momos</div>
+            <div class="tab" data-category="noodles">Noodles</div>
+            <div class="tab" data-category="coffee">Coffee</div>
+            <div class="tab" data-category="pizza">Pizza</div>
+            <div class="tab" data-category="burger">Burger</div>
+            <div class="tab" data-category="fries">Fries</div>
+            <div class="tab" data-category="biryani">Biryani</div>
+            <div class="tab" data-category="chips">Chips</div>
+            <div class="tab" data-category="parottas">Parottas</div>
+            <div class="tab" data-category="dosa">Dosa</div>
+        </div>
+
+        <div class="menu-category">
+            <h2 class="category-title">All Menu Items</h2>
+            <div class="menu-items" id="menu-items">
+                <!-- Menu items will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar">
+        <div class="cart-header">
+            <h2>Your Order</h2>
+            <button class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- Cart items will be dynamically inserted here -->
+        </div>
+        <div class="cart-total">
+            <span>Total:</span>
+            <span id="cart-total">₹0.00</span>
+        </div>
+        <button class="checkout-btn">Proceed to Checkout</button>
+    </div>
+
+    <div class="overlay"></div>
+
+    <script>
+        // Menu Data
+        const menuItems = [
+            // Momos
+            {
+                id: 1,
+                name: "Veg Steamed Momos",
+                category: "momos",
+                restaurant: "Midnight Momos",
+                price: 60,
+                image: "assets/vegsteamedmomos.jpg"
+            },
+            {
+                id: 2,
+                name: "Chicken Fried Momos",
+                category: "momos",
+                restaurant: "Midnight Momos",
+                price: 90,                
+                image: "assets/chicken_momos.jpg"
+
+            },
+            {
+                id: 3,
+                name: "Cheese Chili Momos",
+                category: "momos",
+                restaurant: "Midnight Momos",
+                price: 80,
+                image: "assets/CheeseChiliMomos.jpg"
+            },
+            {
+                id: 4,
+                name: "Spicy Soy Momos",
+                category: "momos",
+                restaurant: "Midnight Momos",
+                price: 70,
+                image: "assets/SpicySoyMomos.jpg"
+            },
+
+            // Noodles
+            {
+                id: 5,
+                name: "Veg Hakka Noodles",
+                category: "noodles",
+                restaurant: "Noodle Express",
+                price: 100,
+                image: "assets/VegHakkaNoodles.jpg"
+            },
+            {
+                id: 6,
+                name: "Chicken Ramen",
+                category: "noodles",
+                restaurant: "Noodle Express",
+                price: 130,
+                image: "assets/ChickenRamen.jpg"
+
+            },
+            {
+                id: 7,
+                name: "Schezwan Noodles",
+                category: "noodles",
+                restaurant: "Noodle Express",
+                price: 110,
+                image: "assets/SchezwanNoodles.jpg"                
+            },
+            {
+                id: 8,
+                name: "Mushroom Pasta",
+                category: "noodles",
+                restaurant: "Noodle Express",
+                price: 120,
+                image: "assets/MushroomPasta.jpg"
+            },
+
+            // Coffee
+            {
+                id: 9,
+                name: "Espresso",
+                category: "coffee",
+                restaurant: "Moonbeam Cafe",
+                price: 60,
+                image: "assets/Espresso.jpg"
+            },
+            {
+                id: 10,
+                name: "Cappuccino",
+                category: "coffee",
+                restaurant: "Moonbeam Cafe",
+                price: 80,
+                image: "assets/Cappuccino.jpg"
+            },
+            {
+                id: 11,
+                name: "Cold Brew",
+                category: "coffee",
+                restaurant: "Moonbeam Cafe",
+                price: 90,
+                image: "assets/ColdBrew.jpg"
+            },
+            {
+                id: 12,
+                name: "Caramel Latte",
+                category: "coffee",
+                restaurant: "Moonbeam Cafe",
+                price: 100,
+                image: "assets/CaramelLatte.jpg"
+            },
+
+            // Pizza
+            {
+                id: 13,
+                name: "Veg Hakka Noodles",
+                category: "pizza",
+                restaurant: "Pizza Night",
+                price: 150,
+                image: "assets/VegHakkaNoodles.jpg"
+             },
+            {
+                id: 14,
+                name: "Pepperoni Pizza",
+                category: "pizza",
+                restaurant: "Pizza Night",
+                price: 180,
+                image: "assets/PepperoniPizza.jpg"
+            },
+            {
+                id: 15,
+                name: "Veg Supreme Pizza",
+                category: "pizza",
+                restaurant: "Pizza Night",
+                price: 170,
+                image: "assets/VegSupremePizza.jpg"
+             },
+            {
+                id: 16,
+                name: "BBQ Chicken Pizza",
+                category: "pizza",
+                restaurant: "Pizza Night",
+                price: 200,
+                image: "assets/BBQChickenPizza.jpg"
+            },
+
+            // Burger
+            {
+                id: 17,
+                name: "Aloo Chicken Burger",
+                category: "burger",
+                restaurant: "Burger Den",
+                price: 60,
+                image: "assets/AlooChickenBurger.jpg"
+            },
+            {
+                id: 18,
+                name: "Chicken Cheese Burger",
+                category: "burger",
+                restaurant: "Burger Den",
+                price: 100,
+                image: "assets/ChickenCheeseBurger.jpg"
+            },
+            {
+                id: 19,
+                name: "Spicy McMock Burger",
+                category: "burger",
+                restaurant: "Burger Den",
+                price: 80,
+                image: "assets/SpicyMcMockBurger.jpg"
+            },
+            {
+                id: 20,
+                name: "Vegan Patty Burger",
+                category: "burger",
+                restaurant: "Burger Den",
+                price: 90,
+                image: "assets/VeganPattyBurger.jpg"
+            },
+
+            // Fries
+            {
+                id: 21,
+                name: "Classic Salted Fries",
+                category: "fries",
+                restaurant: "Burger Den",
+                price: 50,
+                image: "assets/ClassicSaltedFries.jpg"
+            },
+            {
+                id: 22,
+                name: "Peri-Peri Fries",
+                category: "fries",
+                restaurant: "Burger Den",
+                price: 70,
+                image: "assets/Peri-PeriFries.jpg"
+            },
+            {
+                id: 23,
+                name: "Cheese Loaded Fries",
+                category: "fries",
+                restaurant: "Burger Den",
+                price: 90,
+                image: "assets/CheeseLoadedFries.jpg"
+            },
+            {
+                id: 24,
+                name: "Garlic Herb Fries",
+                category: "fries",
+                restaurant: "Burger Den",
+                price: 80,
+                image: "assets/GarlicHerbFries.jpg"
+            },
+
+            // Biryani
+            {
+                id: 25,
+                name: "Veg Hyderabadi Biryani",
+                category: "biryani",
+                restaurant: "Biryani House",
+                price: 120,
+                image: "assets/VegHyderabadiBiryani.jpg"
+            },
+            {
+                id: 26,
+                name: "Chicken Dum Biryani",
+                category: "biryani",
+                restaurant: "Biryani House",
+                price: 150,
+                image: "assets/ChickenDumBiryani.jpg"
+            },
+            {
+                id: 27,
+                name: "Egg Biryani",
+                category: "biryani",
+                restaurant: "Biryani House",
+                price: 130,
+                image: "assets/EggBiryani.jpg"
+            },
+            {
+                id: 28,
+                name: "Panner Biryani",
+                category: "biryani",
+                restaurant: "Biryani House",
+                price: 140,
+                image: "assets/PannerBiryani.jpg"
+            },
+
+            // Chips
+            {
+                id: 29,
+                name: "Lays Chips",
+                category: "chips",
+                restaurant: "Snack Corner",
+                price: 30,
+                image: "assets/LaysChips.jpg"
+            },
+            {
+                id: 30,
+                name: "Kurkure",
+                category: "chips",
+                restaurant: "Snack Corner",
+                price: 25,
+                image: "assets/Kurkure.jpg"
+            },
+            {
+                id: 31,
+                name: "Nachos with Salsa",
+                category: "chips",
+                restaurant: "Snack Corner",
+                price: 80,
+                image: "assets/NachoswithSalsa.jpg"
+            },
+            {
+                id: 32,
+                name: "Pita Chips",
+                category: "chips",
+                restaurant: "Snack Corner",
+                price: 60,
+                image: "assets/PitaChips.jpg"
+            },
+
+            // Parottas
+            {
+                id: 33,
+                name: "Kerala Style Parotta",
+                category: "parottas",
+                restaurant: "Parotta Plaza",
+                price: 40,
+                image: "assets/KeralaStyleParotta.jpg"
+            },
+            {
+                id: 34,
+                name: "Egg Parotta",
+                category: "parottas",
+                restaurant: "Parotta Plaza",
+                price: 50,
+                image: "assets/EggParota.jpg"
+            },
+            {
+                id: 35,
+                name: "Chicken Curry Parotta",
+                category: "parottas",
+                restaurant: "Parotta Plaza",
+                price: 90,
+                image: "assets/ChickenCurryParotta.jpg"
+            },
+            {
+                id: 36,
+                name: "Ghee Roast Parotta",
+                category: "parottas",
+                restaurant: "Parotta Plaza",
+                price: 60,
+                image: "assets/GheeRoastParotta.jpg"
+            },
+
+            // Dosa
+            {
+                id: 37,
+                name: "Plain Dosa",
+                category: "dosa",
+                restaurant: "Dosa Hut",
+                price: 50,
+                image: "assets/PlainDosa.jpg"
+            },
+            {
+                id: 38,
+                name: "Masala Dosa",
+                category: "dosa",
+                restaurant: "Dosa Hut",
+                price: 70,
+                image: "assets/MasalaDosa.jpg"
+            },
+            {
+                id: 39,
+                name: "Cheese Dosa",
+                category: "dosa",
+                restaurant: "Dosa Hut",
+                price: 90,
+                image: "assets/CheeseDosa.jpg"
+            },
+            {
+                id: 40,
+                name: "Onion Uttapam",
+                category: "dosa",
+                restaurant: "Dosa Hut",
+                price: 80,
+                image: "assets/OnionUttapam.jpg"
+            }
+        ];
+
+        // Cart functionality
+        let cart = [];
+        const cartCount = document.querySelector('.cart-count');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalElement = document.getElementById('cart-total');
+        const cartSidebar = document.querySelector('.cart-sidebar');
+        const overlay = document.querySelector('.overlay');
+        const menuItemsContainer = document.getElementById('menu-items');
+        const tabs = document.querySelectorAll('.tab');
+        const cartIcon = document.querySelector('.cart-icon');
+        const closeCartBtn = document.querySelector('.close-cart');
+        const checkoutBtn = document.querySelector('.checkout-btn');
+
+        // Initialize the app
+        function init() {
+            renderMenuItems(menuItems);
+            setupEventListeners();
+            updateCartCount();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Tab filtering
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const category = tab.dataset.category;
+                    if (category === 'all') {
+                        renderMenuItems(menuItems);
+                        document.querySelector('.category-title').textContent = 'All Menu Items';
+                    } else {
+                        const filteredItems = menuItems.filter(item => item.category === category);
+                        renderMenuItems(filteredItems);
+                        document.querySelector('.category-title').textContent = `${category.charAt(0).toUpperCase() + category.slice(1)}`;
+                    }
+                });
+            });
+
+            // Cart toggle
+            cartIcon.addEventListener('click', toggleCart);
+            closeCartBtn.addEventListener('click', toggleCart);
+            overlay.addEventListener('click', toggleCart);
+
+            // Checkout button
+            checkoutBtn.addEventListener('click', checkout);
+        }
+
+        // Render menu items
+        function renderMenuItems(items) {
+            menuItemsContainer.innerHTML = '';
+            
+            items.forEach(item => {
+                const menuItemElement = document.createElement('div');
+                menuItemElement.className = 'menu-item';
+                menuItemElement.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="item-image">
+                    <div class="item-details">
+                        <h3 class="item-name">${item.name}</h3>
+                        <p class="item-price">₹${item.price}</p>
+                        <p class="item-restaurant">${item.restaurant}</p>
+                        <button class="add-to-cart" data-id="${item.id}">Add to Cart</button>
+                    </div>
+                `;
+                
+                menuItemsContainer.appendChild(menuItemElement);
+            });
+
+            // Add event listeners to all "Add to Cart" buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', addToCart);
+            });
+        }
+
+        // Add item to cart
+        function addToCart(e) {
+            const itemId = parseInt(e.target.dataset.id);
+            const item = menuItems.find(item => item.id === itemId);
+            
+            // Check if item already exists in cart
+            const existingItem = cart.find(cartItem => cartItem.id === itemId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    ...item,
+                    quantity: 1
+                });
+            }
+            
+            updateCartCount();
+            renderCartItems();
+            
+            // Show a quick confirmation
+            e.target.textContent = 'Added!';
+            setTimeout(() => {
+                e.target.textContent = 'Add to Cart';
+            }, 1000);
+        }
+
+        // Render cart items
+        function renderCartItems() {
+            cartItemsContainer.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p>Your cart is empty</p>';
+                cartTotalElement.textContent = '₹0.00';
+                return;
+            }
+            
+            let total = 0;
+            
+            cart.forEach(item => {
+                const cartItemElement = document.createElement('div');
+                cartItemElement.className = 'cart-item';
+                cartItemElement.innerHTML = `
+                    <div class="cart-item-info">
+                        <p class="cart-item-name">${item.name}</p>
+                        <p class="cart-item-restaurant">${item.restaurant}</p>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn minus" data-id="${item.id}">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="quantity-btn plus" data-id="${item.id}">+</button>
+                        </div>
+                        <p class="remove-item" data-id="${item.id}">Remove</p>
+                    </div>
+                    <p class="cart-item-price">₹${item.price * item.quantity}</p>
+                `;
+                
+                cartItemsContainer.appendChild(cartItemElement);
+                total += item.price * item.quantity;
+            });
+            
+            cartTotalElement.textContent = `₹${total.toFixed(2)}`;
+            
+            // Add event listeners to quantity buttons
+            document.querySelectorAll('.quantity-btn.minus').forEach(button => {
+                button.addEventListener('click', decreaseQuantity);
+            });
+            
+            document.querySelectorAll('.quantity-btn.plus').forEach(button => {
+                button.addEventListener('click', increaseQuantity);
+            });
+            
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', removeItem);
+            });
+        }
+
+        // Update cart count
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = count;
+        }
+
+        // Toggle cart visibility
+        function toggleCart() {
+            cartSidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            if (cartSidebar.classList.contains('active')) {
+                renderCartItems();
+            }
+        }
+
+        // Decrease item quantity
+        function decreaseQuantity(e) {
+            const itemId = parseInt(e.target.dataset.id);
+            const itemIndex = cart.findIndex(item => item.id === itemId);
+            
+            if (cart[itemIndex].quantity > 1) {
+                cart[itemIndex].quantity -= 1;
+            } else {
+                cart.splice(itemIndex, 1);
+            }
+            
+            updateCartCount();
+            renderCartItems();
+        }
+
+        // Increase item quantity
+        function increaseQuantity(e) {
+            const itemId = parseInt(e.target.dataset.id);
+            const item = cart.find(item => item.id === itemId);
+            
+            item.quantity += 1;
+            
+            updateCartCount();
+            renderCartItems();
+        }
+
+        // Remove item from cart
+        function removeItem(e) {
+            const itemId = parseInt(e.target.dataset.id);
+            const itemIndex = cart.findIndex(item => item.id === itemId);
+            
+            cart.splice(itemIndex, 1);
+            
+            updateCartCount();
+            renderCartItems();
+        }
+
+        // Checkout function
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            // In a real app, you would process payment here
+            alert(`Order placed successfully! Total: ${cartTotalElement.textContent}`);
+            cart = [];
+            updateCartCount();
+            renderCartItems();
+            toggleCart();
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>

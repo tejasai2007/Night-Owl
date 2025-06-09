@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Owl Canteen - Midnight Munchies</title>
+    <style>
+        :root {
+            --dark-bg: #0a0a1a;
+            --darker-bg: #050510;
+            --accent: #6a5acd;
+            --accent-light: #9370db;
+            --text: #f0f0ff;
+            --text-dim: #b0b0c0;
+            --success: #50c878;
+            --moon-glow: #f5f3ce;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(106, 90, 205, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(106, 90, 205, 0.15) 0%, transparent 20%);
+        }
+
+        /* Starry Night Background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        /* Moon */
+        .moon {
+            position: fixed;
+            top: 10%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+            background-color: var(--moon-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 40px 10px var(--moon-glow);
+            z-index: -1;
+            animation: moon-glow 8s infinite alternate;
+        }
+
+        @keyframes moon-glow {
+            0% { box-shadow: 0 0 30px 5px var(--moon-glow); }
+            100% { box-shadow: 0 0 50px 15px var(--moon-glow); }
+        }
+
+        /* Header with Blinking Owl Logo */
+        header {
+            background-color: rgba(5, 5, 16, 0.8);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-light);
+            position: relative;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .owl-eyes {
+            position: absolute;
+            top: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .eye {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-light);
+            border-radius: 50%;
+            animation: blink 4s infinite;
+        }
+
+        @keyframes blink {
+            0%, 48%, 52%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.1); }
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--accent-light), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(106, 90, 205, 0.3);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s forwards 0.5s;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s forwards 1s;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .cta-button, .about-button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(106, 90, 205, 0.4);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s forwards 1.5s;
+            position: relative;
+            z-index: 3;
+            min-width: 200px;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+        }
+
+        .about-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(106, 90, 205, 0.6);
+        }
+
+        .about-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(106, 90, 205, 0.3);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Flying Food Items */
+        .food-items {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .food-item {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            opacity: 0;
+            z-index: 1;
+            animation: 
+                fadeIn 1s forwards 0.5s,
+                float 6s infinite ease-in-out 1.5s;
+        }
+
+        .food-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        /* Position food items around the screen */
+        .momos {
+            top: 20%;
+            left: 10%;
+        }
+        .biryani {
+            top: 70%;
+            left: 15%;
+        }
+        .coffee {
+            top: 30%;
+            right: 10%;
+        }
+        .fries {
+            top: 80%;
+            right: 15%;
+        }
+        .pizza {
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(-10px);
+            }
+            50% {
+                transform: translateY(10px);
+            }
+        }
+
+        /* About Page Styles */
+        .about-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--darker-bg);
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(10, 10, 26, 0.9);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(106, 90, 205, 0.3);
+        }
+
+        .about-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .about-title {
+            font-size: 2rem;
+            color: var(--accent-light);
+        }
+
+        .close-about {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-about:hover {
+            color: var(--text);
+        }
+
+        .team-members {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-member {
+            background-color: rgba(5, 5, 16, 0.5);
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            background-color: rgba(5, 5, 16, 0.7);
+        }
+
+        .member-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 3px solid var(--accent);
+            box-shadow: 0 0 20px rgba(106, 90, 205, 0.5);
+        }
+
+        .member-name {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .member-role {
+            color: var(--accent-light);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .member-contact {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(106, 90, 205, 0.2);
+            transition: background-color 0.3s;
+        }
+
+        .contact-link:hover {
+            background-color: rgba(106, 90, 205, 0.4);
+        }
+
+        .contact-link img {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .food-item {
+                width: 70px;
+                height: 70px;
+            }
+
+            /* Adjust positions for mobile */
+            .momos {
+                top: 15%;
+                left: 5%;
+            }
+            .biryani {
+                top: 75%;
+                left: 10%;
+            }
+            .coffee {
+                top: 25%;
+                right: 5%;
+            }
+            .fries {
+                top: 85%;
+                right: 10%;
+            }
+            .pizza {
+                top: 50%;
+            }
+
+            .team-members {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .tagline {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .food-item {
+                width: 50px;
+                height: 50px;
+            }
+
+            /* Adjust positions for small mobile */
+            .momos {
+                top: 10%;
+                left: 5%;
+            }
+            .biryani {
+                top: 80%;
+                left: 10%;
+            }
+            .coffee {
+                top: 20%;
+                right: 5%;
+            }
+            .fries {
+                top: 90%;
+                right: 10%;
+            }
+            .pizza {
+                top: 50%;
+            }
+
+            .about-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Starry Background -->
+    <div class="stars" id="stars"></div>
+    <div class="moon"></div>
+
+    <!-- Header with Blinking Owl Logo -->
+    <header>
+        <div class="logo-container">
+            <div class="logo">
+                Night<span>Owl</span>
+                <div class="owl-eyes">
+                    <div class="eye left-eye"></div>
+                    <div class="eye right-eye"></div>
+                </div>
+            </div>
+            <div class="tagline">MIDNIGHT MUNCHIES DELIVERED</div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Hungry After Dark?</h1>
+            <p>Your favorite midnight snacks delivered straight to your dorm. Open from 8PM to 4AM.</p>
+            <div class="button-container">
+                <button class="cta-button">Order Now</button>
+                <button class="about-button">About Us</button>
+            </div>
+        </div>
+
+        <!-- Animated Flying Food Items -->
+        <div class="food-items">
+            <div class="food-item momos">
+                <img src="assets/CheeseChiliMomos.jpg" alt="Momos">
+            </div>
+            <div class="food-item biryani">
+                <img src="assets/ChickenDumBiryani.jpg" alt="Biryani">
+            </div>
+            <div class="food-item coffee">
+                <img src="assets/Espresso.jpg" alt="Coffee">
+            </div>
+            <div class="food-item fries">
+                <img src="assets/CheeseLoadedFries.jpg" alt="Fries">
+            </div>
+        </div>
+    </section>
+
+    <!-- About Page (hidden by default) -->
+    <div class="about-page" id="aboutPage">
+        <div class="about-content">
+            <div class="about-header">
+                <h2 class="about-title">Meet the Team</h2>
+                <button class="close-about" id="closeAbout">&times;</button>
+            </div>
+            <p>We're a group of night owls serving delicious midnight munchies to fellow nocturnal students. Contact us anytime between 8PM to 4AM!</p>
+            
+            <div class="team-members">
+                <!-- Team Member 1 -->
+                <div class="team-member">
+                    <img src="assets/Nanda.png" alt="Nanda" class="member-photo">
+                    <h3 class="member-name">Nanda Kishan</h3>
+                    <p class="member-role">Founder & Head Chef</p>
+                    <div class="member-contact">
+                        <a href="https://www.instagram.com/nanda_kishan_choudary?utm_source=qr&igsh=cTB5YjBrbG15dGNm " class="contact-link" target="_blank">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+                        </a>
+                        <a href="tel:+917416262006" class="contact-link">
+                            <img src="https://cdn-icons-png.flaticon.com/512/126/126341.png" alt="Phone">
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Team Member 2 -->
+                <div class="team-member">
+                    <img src="assets/Tejas.png" alt="Tejas" class="member-photo">
+                    <h3 class="member-name">Tejas</h3>
+                    <p class="member-role">Delivery Manager</p>
+                    <div class="member-contact">
+                        <a href="https://www.instagram.com/tejasai_357?igsh=MTlkM29kZ2EydGpzbQ== " class="contact-link" target="_blank">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+                        </a>
+                        <a href="tel:+917799981858" class="contact-link">
+                            <img src="https://cdn-icons-png.flaticon.com/512/126/126341.png" alt="Phone">
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Team Member 3 -->
+                <div class="team-member">
+                    <img src="assets/Varshith.png" alt="Varshith" class="member-photo">
+                    <h3 class="member-name">Varshith</h3>
+                    <p class="member-role">Marketing & Social Media</p>
+                    <div class="member-contact">
+                        <a href="https://www.instagram.com/varshithreddy_52?utm_source=qr&igsh=ZHgyczJnbmEydHds " class="contact-link" target="_blank">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+                        </a>
+                        <a href="tel:+919592311456" class="contact-link">
+                            <img src="https://cdn-icons-png.flaticon.com/512/126/126341.png" alt="Phone">
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Team Member 4 -->
+                <div class="team-member">
+                    <img src="assets/Anup.png" alt="Anup" class="member-photo">
+                    <h3 class="member-name">Anup</h3>
+                    <p class="member-role">Customer Support</p>
+                    <div class="member-contact">
+                        <a href="https://www.instagram.com/anup_narayanam/" class="contact-link" target="_blank">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+                        </a>
+                        <a href="tel:+917989330892" class="contact-link">
+                            <img src="https://cdn-icons-png.flaticon.com/512/126/126341.png" alt="Phone">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create stars for background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random size between 1px and 3px
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Random position
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation duration
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Make food items interactive on hover
+        function makeFoodInteractive() {
+            const foodItems = document.querySelectorAll('.food-item');
+            
+            foodItems.forEach(item => {
+                // Only make interactive if not on mobile
+                if (window.innerWidth > 768) {
+                    item.style.pointerEvents = 'auto';
+                    
+                    item.addEventListener('mouseenter', () => {
+                        item.style.transform = item.style.transform + ' scale(1.2)';
+                        item.querySelector('img').style.filter = 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.6))';
+                        item.style.zIndex = '10';
+                    });
+                    
+                    item.addEventListener('mouseleave', () => {
+                        item.style.transform = item.style.transform.replace(' scale(1.2)', '');
+                        item.querySelector('img').style.filter = 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.3))';
+                        item.style.zIndex = '1';
+                    });
+                }
+            });
+        }
+
+        // About page functionality
+        function setupAboutPage() {
+            const aboutButton = document.querySelector('.about-button');
+            const aboutPage = document.getElementById('aboutPage');
+            const closeAbout = document.getElementById('closeAbout');
+            
+            aboutButton.addEventListener('click', () => {
+                aboutPage.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeAbout.addEventListener('click', () => {
+                aboutPage.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Close when clicking outside content
+            aboutPage.addEventListener('click', (e) => {
+                if (e.target === aboutPage) {
+                    aboutPage.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+
+        // Initialize the page
+        window.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            makeFoodInteractive();
+            setupAboutPage();
+            
+            // Make CTA button navigate to menu page
+            document.querySelector('.cta-button').addEventListener('click', () => {
+                // In a real app, this would navigate to your menu page
+                window.open('hi.html',"_self")
+                /*alert('Navigating to menu page!');*/
+            });
+        });
+
+        // Update on resize
+        window.addEventListener('resize', makeFoodInteractive);
+    </script>
+</body>
+</html>
