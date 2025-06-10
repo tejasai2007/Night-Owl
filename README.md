@@ -9,3 +9,13 @@
 3. Nanda. Role :The html of ordering page all the images,adding to cartand features in home page
 4. Tejas. Role :CSS of both main and home
 
+### Core Technologies
+1. HTML5
+2. CSS3
+3. JavaScript(ES6+)
+
+### Advanced Features & Techniques  
+1. Responsive Design
+2. Modern CSS Features
+3. Interactive Elements
+4. Accessibility Features
